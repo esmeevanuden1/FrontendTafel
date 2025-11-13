@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spelersoverzicht 🏓 - Dark Mode</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #121212;
+      color: #e0e0e0;
+      min-height: 100vh;
+      padding-bottom: 50px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #1e90ff;
+      font-weight: 700;
+      margin: 30px 0;
+    }
+
+    .players-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 25px;
+      padding: 0 10px;
+    }
+
+    .player-card {
+      background-color: #1e1e1e;
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .player-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.7);
+    }
+
+    .player-card img {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      object-fit: cover;
+      transition: transform 0.3s, box-shadow 0.3s;
+      cursor: pointer;
+      margin-bottom: 15px;
+      border: 2px solid #1e90ff;
+    }
+
+    .player-card img:hover {
+      transform: scale(1.3);
+      box-shadow: 0 10px 20px rgba(30,144,255,0.7);
+    }
+
+    .player-card h5 {
+      font-weight: 600;
+      margin-bottom: 5px;
+      color: #ffffff;
+    }
+
+    .player-card p {
+      margin: 2px 0;
+      color: #cfd8dc;
+    }
+
+    @media (max-width: 576px) {
+      .player-card img {
+        width: 100px;
+        height: 100px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Spelersoverzicht 🏓</h1>
+    <div class="players-container" id="players-container">
+      <!-- Spelerskaarten worden hier toegevoegd -->
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const playerImages = {
+        "Lara Jansen": "https://image.trouw.nl/251775305/width/2480/tafeltennisster-britt-eerland-in-actie-op-het-vrouwenenkelspel",
+        "Sophie Keller": "https://image.parool.nl/63670367/width/2480/goud-een-droom-voor-tafeltennisster-kelly-van-zon",
+        "Milan Verhoeven": "https://images.nu.nl/m/j34xuhia0alm_wd1280/2/98/3286/1849/trinko-keen.jpg",
+        "Jonas Peeters": "https://images.vrt.be/width1280/2025/08/21/38b8af95-cbf5-41d7-ba13-2627b2c9a9ff.jpg",
+        "Tom Müller": "https://prod-img.nieuwsblad.be/public/nieuws/xnaovu-65a201bb-d8aa-4499-86ca-e94437ede2d3.jpg/alternates/THREE_TWO_810/65a201bb-d8aa-4499-86ca-e94437ede2d3.jpg"
+      };
+
+      fetch("http://127.0.0.1:5000/donny")
+        .then(response => response.json())
+        .then(data => {
+          const container = document.getElementById("players-container");
+          data.forEach(p => {
+            const imgSrc = playerImages[p.full_name] || "https://via.placeholder.com/120/1e1e1e/FFFFFF?text=No+Image";
+
+            const card = document.createElement("div");
+            card.classList.add("player-card");
+            card.innerHTML = `
+              <img src="${imgSrc}" alt="${p.full_name}" title="${p.full_name}">
+              <h5>${p.full_name}</h5>
+              <p><strong>Geslacht:</strong> ${p.gender}</p>
+              <p><strong>Speelstijl:</strong> ${p.playing_style}</p>
+              <p><strong>Club:</strong> ${p.club}</p>
+            `;
+            container.appendChild(card);
+          });
+        })
+        .catch(err => console.error("Fout bij ophalen van data:", err));
+    });
+  </script>
+</body>
+</html>
