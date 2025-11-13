@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Voetbalclubs in Nederland ⚽</title>
+
+  <style>
+    /* ===== Reset en basisstijl ===== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #1e3c72, #2a5298);
+      min-height: 100vh;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px;
+    }
+
+    h1 {
+      font-size: 2.4rem;
+      margin-bottom: 25px;
+      text-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
+      letter-spacing: 1px;
+    }
+
+    /* ===== Container ===== */
+    .container {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      padding: 30px;
+      width: 90%;
+      max-width: 900px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(12px);
+      animation: fadeIn 1s ease-in-out;
+    }
+
+    /* ===== Zoekbalk ===== */
+    #searchBar {
+      width: 100%;
+      padding: 12px 16px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 10px;
+      outline: none;
+      margin-bottom: 20px;
+      background-color: rgba(255, 255, 255, 0.2);
+      color: #fff;
+    }
+
+    #searchBar::placeholder {
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    /* ===== Tabel ===== */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      border-radius: 10px;
+      overflow: hidden;
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    th, td {
+      padding: 14px 16px;
+      text-align: left;
+    }
+
+    th {
+      background: rgba(255, 255, 255, 0.3);
+      color: #fff;
+      text-transform: uppercase;
+      font-size: 0.9rem;
+      letter-spacing: 1px;
+    }
+
+    tr {
+      transition: background 0.3s ease;
+    }
+
+    tr:nth-child(even) {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    tr:hover {
+      background: rgba(255, 255, 255, 0.25);
+    }
+
+    /* ===== Animatie ===== */
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(15px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* ===== Loading tekst ===== */
+    #loading {
+      text-align: center;
+      padding: 30px;
+      font-size: 1.2rem;
+      color: rgba(255, 255, 255, 0.8);
+    }
+  </style>
+</head>
+
+<body>
+  <h1>🇳🇱 Nederlandse Voetbalclubs ⚽</h1>
+
+  <div class="container">
+    <input type="text" id="searchBar" placeholder="Zoek op naam of stad..." />
+    <div id="table-container">
+      <div id="loading">Data wordt geladen...</div>
+    </div>
+  </div>
+
+  <script>
+    const tableContainer = document.getElementById('table-container');
+    const searchBar = document.getElementById('searchBar');
+    let allData = [];
+
+    // Data ophalen van Flask
+    fetch('http://127.0.0.1:5000/bente')
+      .then(response => response.json())
+      .then(data => {
+        allData = data;
+        renderTable(allData);
+      })
+      .catch(err => {
+        tableContainer.innerHTML = "<p style='color:red;'>❌ Fout bij ophalen van data.</p>";
+        console.error(err);
+      });
+
+    // Functie om tabel te maken
+    function renderTable(data) {
+      if (data.length === 0) {
+        tableContainer.innerHTML = "<p>Geen resultaten gevonden.</p>";
+        return;
+      }
+
+      const columns = Object.keys(data[0]);
+      let tableHTML = "<table><thead><tr>";
+      columns.forEach(col => tableHTML += `<th>${col}</th>`);
+      tableHTML += "</tr></thead><tbody>";
+
+      data.forEach(row => {
+        tableHTML += "<tr>";
+        columns.forEach(col => tableHTML += `<td>${row[col]}</td>`);
+        tableHTML += "</tr>";
+      });
+
+      tableHTML += "</tbody></table>";
+      tableContainer.innerHTML = tableHTML;
+    }
+
+    // Filterfunctie
+    searchBar.addEventListener('input', () => {
+      const query = searchBar.value.toLowerCase();
+      const filtered = allData.filter(item => 
+        Object.values(item).some(val => 
+          String(val).toLowerCase().includes(query)
+        )
+      );
+      renderTable(filtered);
+    });
+  </script>
+</body>
+</html>

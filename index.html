@@ -1,0 +1,26 @@
+
+
+<script>
+    function checkitout(){
+        console.log("check");
+        fetch("http://127.0.0.1:5000/esmee")
+        .then( r => r.json() )
+        .then( d => esmeeherewego(d))
+    }
+    
+    function esmeeherewego(data){
+        let eindstring = "";
+        for(let x =0; x< data.length;x++){
+            eindstring += `
+                <div>${data[x].name}</div>
+            `
+        }
+        document.getElementById("uitkomst").innerHTML = eindstring;
+    }
+        
+    
+
+    
+</script>
+<button onclick="checkitout()">klik hier</button>
+<div id="uitkomst"></div>
