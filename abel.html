@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Flask Data</title>
+  <style>
+    body {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: #f5f6fa;
+      color: #333;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #2f3640;
+    }
+
+    #clubs-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .club-card {
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      padding: 15px 20px;
+      width: 250px;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .club-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    }
+
+    .club-name {
+      font-weight: bold;
+      font-size: 1.1em;
+      color: #273c75;
+    }
+
+    .club-detail {
+      font-size: 0.9em;
+      color: #555;
+      margin-top: 4px;
+    }
+
+    #error {
+      color: red;
+      text-align: center;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Flask Data</h1>
+  <p style="text-align:center;">Available clubs:</p>
+  <div id="clubs-container"></div>
+  <p id="error"></p>
+
+  <script>
+    fetch('http://127.0.0.1:5000/abel')
+      .then(response => response.json())
+      .then(data => {
+        const container = document.getElementById('clubs-container');
+        container.innerHTML = ''; // clear any existing content
+
+        data.forEach(obj => {
+          const card = document.createElement('div');
+          card.classList.add('club-card');
+          card.innerHTML = `
+            <div class="club-name">${obj.name}</div>
+            ${obj.city ? `<div class="club-detail">City: ${obj.city}</div>` : ''}
+          `;
+          container.appendChild(card);
+        });
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        document.getElementById('error').textContent = 'Failed to load data.';
+      });
+  </script>
+</body>
+</html>
